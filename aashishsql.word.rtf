@@ -1,0 +1,237 @@
+{\rtf1\ansi\deff0\nouicompat{\fonttbl{\f0\fnil\fcharset0 Courier New;}}
+{\*\generator Riched20 10.0.19041}\viewkind4\uc1 
+\pard\f0\fs22\lang1033 --I made this project in which a dataset is used by me \par
+--and solving some questions, related to the dataset by the help of sql queries.\par
+\par
+\par
+CREATE DATABASE Company;\par
+\par
+USE Company;\par
+\par
+CREATE TABLE jobs(\par
+  id INTEGER\par
+  ,work_year INTEGER\par
+  ,experience_level VARCHAR(20)\par
+  ,employment_type VARCHAR(20)\par
+  ,job_title VARCHAR(20)\par
+  ,salary INTEGER\par
+  ,salary_currency VARCHAR(20)\par
+  ,salary_in_usd INTEGER\par
+  ,employee_residence VARCHAR(20)\par
+  ,remote_ratio INTEGER\par
+  ,company_location VARCHAR(20)\par
+  ,company_size VARCHAR(20)\par
+);\par
+\par
+CREATE TABLE companies(\par
+id INT,\par
+company_name VARCHAR(20));\par
+\par
+select * from companies\par
+\par
+select * from jobs\par
+\par
+\par
+--##1. What is the average salary for all the jobs in the dataset?\par
+\par
+SELECT AVG(salary) AS average_salary FROM jobs;\par
+\par
+--##2. What is the highest salary in the dataset and which job role does it correspond to?\par
+\par
+SELECT MAX(salary) AS highest_salary, job_title FROM jobs;\par
+\par
+--##3. What is the average salary for data scientists in US?\par
+\par
+SELECT AVG(salary) AS average_salary FROM jobs WHERE job_title = 'Data Scientist' AND company_location = 'US';\par
+\par
+--##4. What is the number of jobs available for each job title?\par
+\par
+SELECT job_title, COUNT(*) AS num_jobs FROM jobs GROUP BY job_title;\par
+\par
+--##5. What is the total salary paid for all data analyst jobs in DE?\par
+\par
+SELECT SUM(salary) AS total_salary_paid FROM jobs WHERE job_title = 'Data Analyst' AND company_location = 'DE';\par
+\par
+--##6. What are the top 5 highest paying job titles and their corresponding average salaries?\par
+\par
+SELECT job_title, AVG(salary) AS average_salary FROM jobs GROUP BY job_title ORDER BY average_salary DESC LIMIT 5;\par
+\par
+--##7. What is the number of jobs available in each location?\par
+\par
+SELECT company_location, COUNT(*) AS num_jobs FROM jobs GROUP BY company_location;\par
+\par
+--##8. What are the top 3 job titles that have the most jobs available in the dataset?\par
+\par
+SELECT job_title, COUNT(*) AS num_jobs FROM jobs GROUP BY job_title ORDER BY num_jobs DESC LIMIT 3;\par
+\par
+--##9. What is the average salary for data engineers in Boston?\par
+\par
+SELECT AVG(salary) AS average_salary FROM jobs WHERE job_title = 'Data Engineer' AND company_location = 'Boston'; #change with some other location\par
+\par
+--##10. What are the top 5 cities with the highest average salaries?\par
+\par
+SELECT company_location, AVG(salary) AS average_salary FROM jobs GROUP BY company_location ORDER BY average_salary DESC LIMIT 5;\par
+\par
+--##11. What is the average salary for each job title, and what is the total number of jobs available for each job title?\par
+\par
+SELECT job_title, AVG(salary) AS average_salary, COUNT(*) AS num_jobs \par
+FROM jobs \par
+GROUP BY job_title;\par
+\par
+--##12. What are the top 5 job titles with the highest total salaries, and what is the total number of jobs available for each job title?\par
+\par
+SELECT job_title, SUM(salary) AS total_salary, COUNT(*) AS num_jobs \par
+FROM jobs \par
+GROUP BY job_title \par
+ORDER BY total_salary DESC \par
+LIMIT 5;\par
+\par
+--##13. What are the top 5 locations with the highest total salaries, and what is the total number of jobs available for each location?\par
+\par
+SELECT company_location, SUM(salary) AS total_salary, COUNT(*) AS num_jobs \par
+FROM jobs \par
+GROUP BY company_location \par
+ORDER BY total_salary DESC \par
+LIMIT 5;\par
+\par
+--##14. What is the average salary for each job title in each location, and what is the total number of jobs available for each job title in each location?\par
+\par
+SELECT job_title, company_location, AVG(salary) AS average_salary, COUNT(*) AS num_jobs \par
+FROM jobs \par
+GROUP BY job_title, company_location;\par
+\par
+--##15. What is the average salary for each job title in each location, and what is the percentage of jobs for each job title in each location?\par
+\par
+SELECT job_title, company_location, AVG(salary) AS average_salary, \par
+(COUNT(*) * 100 / (SELECT COUNT(*) FROM jobs WHERE company_location = j.company_location)) AS job_percentage \par
+FROM jobs j \par
+GROUP BY job_title, company_location;\par
+\par
+--##16. What are the top 5 job titles with the highest average salaries, and what is the total number of jobs available for each job title?\par
+\par
+SELECT job_title, AVG(salary) AS average_salary, COUNT(*) AS num_jobs \par
+FROM jobs \par
+GROUP BY job_title \par
+ORDER BY average_salary DESC \par
+LIMIT 5;\par
+\par
+--##17. What is the average salary for each job title, and what is the percentage of jobs for each job title in the dataset?\par
+\par
+SELECT job_title, AVG(salary) AS average_salary, \par
+(COUNT(*) * 100 / (SELECT COUNT(*) FROM jobs)) AS job_percentage \par
+FROM jobs \par
+GROUP BY job_title;\par
+\par
+\par
+--##18. What is the total number of jobs available for each year of experience, and what is the average salary for each year of experience?\par
+\par
+SELECT experience_level, COUNT(*) AS num_jobs, AVG(salary) AS average_salary \par
+FROM jobs \par
+GROUP BY experience_level;\par
+/*\par
+EN, which refers to Entry-level / Junior.\par
+MI, which refers to Mid-level / Intermediate.\par
+SE, which refers to Senior-level / Expert.\par
+EX, which refers to Executive-level / Director.\par
+*/\par
+\par
+\par
+\par
+--##19. What are the top 5 job titles with the highest average salaries in each location?\par
+\par
+SELECT job_title, company_location, AVG(salary) AS average_salary \par
+FROM jobs \par
+WHERE job_title IN (SELECT job_title FROM jobs GROUP BY job_title ORDER BY AVG(salary) DESC) \par
+GROUP BY job_title, company_location;\par
+\par
+--##20. What is the average salary for each degree level, and what is the total number of jobs available for each degree level?\par
+\par
+SELECT degree_level, AVG(salary) AS average_salary, COUNT(*) AS num_jobs \par
+FROM jobs \par
+GROUP BY degree_level;\par
+\par
+--#21. What are the top 5 job titles with the highest salaries, and what is the name of the company that offers the highest salary for each job title?\par
+\par
+SELECT job_title, MAX(salary) AS highest_salary, company_name \par
+FROM jobs \par
+INNER JOIN companies ON jobs.id = companies.id \par
+GROUP BY job_title \par
+ORDER BY highest_salary DESC \par
+LIMIT 5;\par
+\par
+--##22. What is the total number of jobs available for each job title, and what is the name of the company that offers the highest salary for each job title?\par
+\par
+\par
+SELECT job_title, COUNT(*) AS num_jobs, company_name \par
+FROM jobs \par
+INNER JOIN companies ON jobs.id = companies.id \par
+WHERE salary = (SELECT MIN(salary) FROM jobs WHERE job_title = jobs.job_title) \par
+GROUP BY job_title, company_name;\par
+\par
+- Assignment\par
+\par
+--##23. What are the top 5 cities with the highest average salaries, and what is the name of the company that offers the highest salary for each city?\par
+\par
+SELECT company_location, AVG(salary) AS average_salary, company_name \par
+FROM jobs \par
+INNER JOIN companies ON jobs.id = companies.id \par
+GROUP BY company_location \par
+ORDER BY average_salary DESC \par
+LIMIT 5;\par
+\par
+--##24. What is the average salary for each job title in each company, and what is the rank of each job title within each company based on the average salary?\par
+\par
+SELECT job_title, company_name, AVG(salary) AS average_salary, \par
+RANK() OVER (PARTITION BY company_name ORDER BY AVG(salary) DESC) AS salary_rank \par
+FROM jobs \par
+INNER JOIN companies ON jobs.id = companies.id \par
+GROUP BY job_title, company_name;\par
+\par
+--##25. What is the total number of jobs available for each job title in each location, and what is the rank of each job title within each location based on the total number of jobs?\par
+\par
+SELECT job_title, company_location, COUNT(*) AS num_jobs, \par
+RANK() OVER (PARTITION BY company_location ORDER BY COUNT(*) DESC) AS job_rank \par
+FROM jobs \par
+GROUP BY job_title, company_location;\par
+\par
+\par
+--#26. What is the average salary for each job title in each location, and what is the name of the company that offers the highest salary for each job title in each location?\par
+\par
+SELECT job_title, company_location, AVG(salary) AS average_salary, company_name \par
+FROM jobs \par
+INNER JOIN companies ON jobs.id = companies.id \par
+WHERE salary = (SELECT MAX(salary) FROM jobs WHERE job_title = j.job_title AND company_location = j.location) \par
+GROUP BY job_title, location, company_name;\par
+\par
+\par
+ \par
+\par
+\par
+\par
+\par
+--#27. What are the top 5 companies with the highest average salaries for data scientist positions, and what is the rank of each company based on the average salary?\par
+\par
+SELECT company_name, AVG(salary) AS average_salary,\par
+RANK() OVER (ORDER BY AVG(salary) DESC) AS salary_rank \par
+FROM jobs \par
+INNER JOIN companies ON jobs.id = companies.id \par
+WHERE job_title = 'Data Scientist' \par
+GROUP BY company_name \par
+ORDER BY average_salary DESC \par
+LIMIT 5;\par
+\par
+--#28. What is the total number of jobs available for each year of experience in each location, and what is the rank of each year of experience within each location based on the total number of jobs?\par
+\par
+SELECT work_year, company_location, COUNT(*) AS num_jobs, \par
+RANK() OVER (PARTITION BY company_location ORDER BY COUNT(*) DESC) AS experience_rank \par
+FROM jobs \par
+GROUP BY work_year, company_location;\par
+\par
+\par
+SELECT COUNT(*) FROM jobs \par
+\par
+--Thank you \par
+\par
+\par
+}
+ 
